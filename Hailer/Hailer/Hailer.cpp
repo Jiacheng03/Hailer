@@ -7,6 +7,7 @@ Hailer::Hailer(unsigned short myport, const char* peerip, unsigned short peerPor
 {
 }
 
+// 开始服务
 void Hailer::Start()
 {	
 	t_bkRecv.SetRun(bind(&Hailer::thread_recv, this), 0);
@@ -34,7 +35,7 @@ void Hailer::Start()
 	t_recv.Start(SType::THREAD_JOIN);
 }
 
-// 结束
+// 结束整个进程
 void Hailer::Stop()
 {
 	// 终止线程
