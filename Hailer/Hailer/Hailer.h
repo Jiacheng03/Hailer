@@ -23,7 +23,7 @@ public:
 	void Send(const char* buf, int len);
 
 	// 接收数据，即从消息队列取数据
-	int Recv(char* buf, int len);
+	string Recv();
 
 private:
 

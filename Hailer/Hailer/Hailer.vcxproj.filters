@@ -30,6 +30,9 @@
     <ClCompile Include="Thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Msg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hailer.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Thread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Msg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

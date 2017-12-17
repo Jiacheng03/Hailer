@@ -28,9 +28,9 @@ void Hailer::Start()
 
 
 	t_recv.SetRun([this](){
-		char buf[MAXBYTE] = { 0 };
-		if (Recv(buf, sizeof(buf)) >= 0)
-			printf("from peer: %s\n", buf);
+		string buf = Recv();
+		if (!buf.empty())		
+			printf("from peer: %s\n", buf.c_str());			
 	}, 0);
 	t_recv.Start(SType::THREAD_JOIN);
 }
@@ -56,37 +56,30 @@ void Hailer::Stop()
 //发送数据，即将数据加入消息队列
 void Hailer::Send(const char* buf, int len)
 {
-	Msg * pMsg = (Msg*)new char[sizeof(Msg)+len];
-	memset(pMsg, 0, sizeof(Msg)+len);	
-	pMsg->time = time(NULL);	
-	pMsg->size = len;
-	memmove(pMsg->data, buf, len);
-
-	shared_ptr<Msg> shared_pMsg(pMsg);
-	m_sendList.Push_front(shared_pMsg);	
+	Msg msg = make_shared<RealMsg>(buf, len);	
+	m_sendList.Push_front(msg);	
 }
 
 // 接收数据，即从消息队列取数据
-int Hailer::Recv(char* buf, int len)
+string Hailer::Recv()
 {
-	shared_ptr<Msg> pMsg = m_recvList.Pop();
-	if (pMsg->size < len)
-		len = pMsg->size;
-	memmove(buf, pMsg->data, len);
-	return len;
+	Msg msg = m_recvList.Pop();
+	return msg->m_data;
 }
 
 // 负责从端口发送数据
 void Hailer::thread_resend()
 {		
 	// 发送数据，直到消息队列为空
-	while (m_sendList.CheckTime(time(NULL)))
+	while (m_sendList.CheckTime((unsigned int)time(NULL)))
 	{
-		shared_ptr<Msg> pMsg = m_sendList.Pop();
-		m_talker.Send((char*)pMsg.get(), sizeof(Msg)+pMsg->size);
-		pMsg->time = time(NULL);
-		pMsg->rto = getRTO();				// 暂时定为2秒
-		m_sendList.InsertByOrder(pMsg);
+		Msg msg = m_sendList.Pop();
+		string buf = msg->Serialize();
+		m_talker.Send(buf.c_str(), buf.size());
+
+		msg->m_head.timestamp = (unsigned int)time(NULL);	// 更新时间戳
+		msg->m_head.rto = getRTO();			// 暂时定为常数2秒
+		m_sendList.InsertByOrder(msg);
 	}
 }
 
@@ -95,7 +88,7 @@ void Hailer::thread_recv()
 {
 	char buf[1024] = { 0 };
 	int size = m_talker.Recv(buf, sizeof(buf));
-	if (size == -WSAECONNRESET)		// 错误：对方未监听端口
+	if (size == -WSAECONNRESET)		// 对方未监听端口
 	{
 		printf("%s\n", "peer is not online.");
 		return;
@@ -105,30 +98,25 @@ void Hailer::thread_recv()
 		return;
 	}
 
-	Msg* pMsg = (Msg*)new char[size];
-	memmove(pMsg, buf, size);
+	Msg msg = make_shared<RealMsg>(string(buf, size));
 
-	shared_ptr<Msg> shared_pMsg(pMsg);
-	if (shared_pMsg->time + shared_pMsg->rto < time(NULL))	// 若已超时，则忽略			
+	if (msg->m_head.timestamp + msg->m_head.rto < time(NULL))	// 若已超时，则忽略			
 	{
 		return;
 	}
-	else if (shared_pMsg->ACK)		// 若收到的是ack
+	else if (msg->m_head.ACK)		// 若收到的是ack
 	{
-		m_sendList.Erase(shared_pMsg->seq);
+		m_sendList.Erase(msg->m_head.seq);
 	}
 	else  // 收到的是数据包
 	{
-		m_recvList.Push_back(shared_pMsg);
+		m_recvList.Push_back(msg);
 
 		// 发送ACK			
-		shared_ptr<Msg> ackMsg(new Msg);
-		ackMsg->seq = shared_pMsg->seq;
-		ackMsg->time = shared_pMsg->time;
-		ackMsg->rto = shared_pMsg->rto;
-		ackMsg->size = 0;
-		ackMsg->ACK = true;
-		m_talker.Send((const char*)(ackMsg.get()), sizeof(Msg));
+		Msg ackMsg( msg->GetACK());
+		string ackbuf = ackMsg->Serialize();
+		
+		m_talker.Send(ackbuf.c_str(), ackbuf.size());
 	}
 }
 

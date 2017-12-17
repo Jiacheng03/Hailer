@@ -40,7 +40,7 @@ bool Thread::Start(SType type)
 
 // 停止线程: 停止对任务的循环执行，而当前任务会正常执行
 void Thread::Stop()
-{
+{	
 	m_started = false;
 }
 
