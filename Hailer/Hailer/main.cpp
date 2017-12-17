@@ -1,17 +1,15 @@
 #include <iostream>
 #include "Hailer.h"
-//#include "MsgList.h"
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
-	/*Hailer hailer(33333, "127.0.0.1", 44444);
-	hailer.Start();*/
-
 	if (argc < 4)
 	{
 		cout << "<usage>: Hailer.exe myPort peerIp peerPort" << endl;
+		cout << "<usage>: 也可以直接使用Debug或Release目录下的start.bat，启动程序." << endl;
+		system("pause");
 	}
 	else
 	{
@@ -19,6 +17,5 @@ int main(int argc, char** argv)
 		hailer.Start();
 	}
 	
-	//system("pause");
 	return 0;
 }
