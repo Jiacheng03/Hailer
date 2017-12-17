@@ -13,6 +13,7 @@ RealMsg::RealMsg(const char* data, int len)
 	m_head.timestamp = (unsigned int)time(NULL);
 	m_head.rto = 2;
 	m_head.ACK = false;
+	m_head.size = len;
 	m_data = string(data, len);
 }
 
@@ -28,6 +29,7 @@ RealMsg* RealMsg::GetACK()
 	RealMsg* ackMsg = new RealMsg();
 	ackMsg->m_head = m_head;
 	ackMsg->m_head.ACK = true;
+	ackMsg->m_head.size = 0;
 	return ackMsg;
 }
 
@@ -43,5 +45,5 @@ string RealMsg::Serialize()
 void RealMsg::Deserialize(string buf)
 {
 	m_head = *(Head*)(buf.c_str());
-	m_data = buf.substr(sizeof(Head));
+	m_data = buf.substr(sizeof(Head), m_head.size);
 }

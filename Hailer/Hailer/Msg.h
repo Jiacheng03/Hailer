@@ -14,7 +14,8 @@ struct Head
 {	
 	unsigned int seq;
 	unsigned int timestamp;	// 发送时的时间戳
-	unsigned int rto;	// 重传超时					
+	unsigned int rto;	// 重传超时	
+	unsigned int size;
 	bool ACK;	// 是否是ack消息
 };
 
