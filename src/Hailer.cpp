@@ -11,11 +11,16 @@ Hailer::Hailer(unsigned short myport, const char* peerip, unsigned short peerPor
 // 开始服务
 void Hailer::Start()
 {	
+	// 持续获取来自对端的数据
 	t_bkRecv.SetRun(bind(&Hailer::thread_recv, this), 0);
+
+	// 将重传队列的数据发出
 	t_bkSend.SetRun(bind(&Hailer::thread_resend, this), 0);
+
 	t_bkRecv.Start();
 	t_bkSend.Start();
 
+	// 从消息队列取出消息，打印在控制台
 	t_recv.SetRun([this](){
 		string buf = Recv();
 		if (!buf.empty())		
@@ -23,6 +28,7 @@ void Hailer::Start()
 	}, 0);
 	t_recv.Start();
 
+	// 从控制台读取消息，放入重传队列
 	t_send.SetRun([this]() {
 		char buf[255] = { 0 };
 		cin.getline(buf, 255);
@@ -83,7 +89,7 @@ void Hailer::thread_resend()
 	}
 }
 
-// 负责监听端口
+// 负责监听端口，持续调用m_talker接收数据
 void Hailer::thread_recv()
 {
 	char buf[1024] = { 0 };
