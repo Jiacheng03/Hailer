@@ -54,7 +54,7 @@ void Thread::m_threadRun()
 	for (int i = 0; (i < m_times || m_times<=0) && m_started; i++)
 	{
 		m_task();
-		this_thread::sleep_for(chrono::milliseconds(100));
+		this_thread::sleep_for(chrono::milliseconds(50));
 	}
 	m_started = false;
 }

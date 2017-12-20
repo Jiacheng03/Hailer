@@ -3,19 +3,6 @@
 
 using namespace std;
 
-//// 获取标准输入，再发送给对端；它以线程函数的形式被调用；
-//DWORD WINAPI ThreadFunc(LPVOID pParam)
-//{	
-//	while (true)
-//	{
-//		char buf[MAXBYTE] = { 0 };
-//		cin.getline(buf, MAXBYTE);
-//		((Talker*)pParam)->Send(buf, strlen(buf) + 1);
-//	}
-//	return 0;
-//}
-
-
 // 初始化WSADATA，绑定本地端口，建立UDP“连接”；
 Talker::Talker(unsigned short myport, const char* peerip, unsigned short peerPort)
 {
@@ -24,26 +11,29 @@ Talker::Talker(unsigned short myport, const char* peerip, unsigned short peerPor
 	AimAt(peerip, peerPort);
 }
 
-
 // 清理WSADATA和套接字；
 Talker::~Talker()
 {
+#ifdef _MSC_VER
 	closesocket(m_sockfd);	
 	WSACleanup();
+#else
+	close(m_sockfd);
+#endif
 }
-
 
 // 初始化WSADATA；
 void Talker::init()
 {	
+#ifdef _MSC_VER
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		cerr << "Could not load winsock" << endl;
-		exit(1);
+		cerr << "Could not load winsock\n";
+		exit(GetErrno());
 	}
+#endif
 }
-
 
 // 套接字绑定本地端口；
 void Talker::OpenPort(unsigned short port)
@@ -53,21 +43,21 @@ void Talker::OpenPort(unsigned short port)
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(port);
 	
-	if ((m_sockfd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	if ((m_sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
 	{
 		cerr << "socket fail" << endl;
-		exit(WSAGetLastError());
+		exit(GetErrno());
 	}
-	u_long lMode = 1;
-	ioctlsocket(m_sockfd, FIONBIO, &lMode);
+
+	// 将套接字设置为非阻塞
+	SetNonBlock(m_sockfd);
 
 	if (bind(m_sockfd, (const sockaddr*)&servaddr, sizeof(servaddr)) != 0)
 	{
-		cerr << "bind fail" << endl;
-		exit(WSAGetLastError());
+		cerr << "bind fail\n";
+		exit(GetErrno());
 	}
 }
-
 
 // 建立UDP“连接”；
 void Talker::AimAt(const char* ip, unsigned short port)
@@ -79,56 +69,52 @@ void Talker::AimAt(const char* ip, unsigned short port)
 
 	if (connect(m_sockfd, (const sockaddr*)&servaddr, sizeof(servaddr)) < 0)
 	{
-		cerr << "connect fail" << endl;
-		exit(WSAGetLastError());
+		cerr << "connect fail\n";
+		exit(GetErrno());
 	}
 }
 
-
-//// 创建线程，获取标准输入，发送给对端；
-//// 接收来自对端的消息，并打印；
-//void Talker::Start()
-//{
-//	cout << "talking ..." << endl;
-//	HANDLE handle = CreateThread(NULL, 0, ThreadFunc, this, 0, NULL);
-//
-//	while (true)
-//	{
-//		char buf[1024] = { 0 };
-//		int size = Recv(buf, sizeof(buf));		
-//		if (size > 0)
-//		{
-//			printf("from peer: %s\n", buf);
-//		}
-//		else if (size == -WSAECONNRESET)
-//		{
-//			printf("%s\n", "peer is not online.");
-//		}
-//		else
-//		{
-//			Sleep(1000);
-//		}
-//	}
-//}
-
-
+// 发送数据
 int Talker::Send(const char* buf, int len)
 {	
 	int size = 0;
 	if ((size = send(m_sockfd, buf, len, 0)) < 0)
-	{		
-		return WSAGetLastError();
+	{	
+		cerr << "Talker::Send failed\n";	
+		return -1 * GetErrno();
 	}		
 	return size;
 }
 
-int Talker::Recv(char * buf, int len)  // **
+// 接收数据
+int Talker::Recv(char * buf, int len)
 {
 	int size = 0;
 	if ((size = recv(m_sockfd, buf, len, 0)) < 0)
 	{	
-		return -1*WSAGetLastError();
-	}		
+		return -1 * GetErrno();
+	}	
 	return size;
 }
 
+// 获取错误码
+int Talker::GetErrno()
+{
+#ifdef _MSC_VER
+	return WSAGetLastError();
+#else
+	return errno;
+#endif
+}
+
+// 设置socket为非阻塞类型
+void Talker::SetNonBlock(SOCKET sockfd)
+{
+#ifdef _MSC_VER
+		u_long lMode = 1;
+		ioctlsocket(sockfd, FIONBIO, &lMode);
+#else
+		int flags = fcntl(sockfd, F_GETFL, 0);
+		fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+#endif
+}

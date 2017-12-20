@@ -8,6 +8,8 @@
 #include <thread>
 #include <condition_variable>
 
+#include <string.h>
+
 class Hailer
 {
 public:

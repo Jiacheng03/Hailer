@@ -42,5 +42,4 @@ struct RealMsg
 	// 反序列化消息
 	void Deserialize(std::string buf);
 };
-
 #pragma pack()

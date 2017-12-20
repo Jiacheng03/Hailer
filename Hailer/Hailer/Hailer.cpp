@@ -15,24 +15,23 @@ void Hailer::Start()
 	t_bkRecv.Start();
 	t_bkSend.Start();
 
-	t_send.SetRun([this](){
-		char buf[MAXBYTE] = { 0 };
-		cin.getline(buf, MAXBYTE);
+	t_recv.SetRun([this](){
+		string buf = Recv();
+		if (!buf.empty())		
+			printf("from peer: %s\n", buf.c_str());			
+	}, 0);
+	t_recv.Start();
+
+	t_send.SetRun([this]() {
+		char buf[255] = { 0 };
+		cin.getline(buf, 255);
 		if (strcmp(buf, "exit") == 0)
 		{
 			Stop();
 		}
 		Send(buf, strlen(buf) + 1);
 	}, 0);
-	t_send.Start();
-
-
-	t_recv.SetRun([this](){
-		string buf = Recv();
-		if (!buf.empty())		
-			printf("from peer: %s\n", buf.c_str());			
-	}, 0);
-	t_recv.Start(SType::THREAD_JOIN);
+	t_send.Start(SType::THREAD_JOIN);
 }
 
 // 结束整个进程
@@ -88,7 +87,7 @@ void Hailer::thread_recv()
 {
 	char buf[1024] = { 0 };
 	int size = m_talker.Recv(buf, sizeof(buf));
-	if (size == -WSAECONNRESET)		// 对方未监听端口
+	if (size == -ECONNRESET)		// 对方未监听端口
 	{
 		printf("%s\n", "peer is not online.");
 		return;
