@@ -28,7 +28,7 @@ struct RealMsg
 	RealMsg();
 
 	// 根据消息体，构造消息
-	RealMsg(const char* data, int len);
+	RealMsg(const char* data, int len, unsigned int rto=2);
 
 	// 从序列化的消息结构中，构造消息
 	RealMsg(std::string buf);

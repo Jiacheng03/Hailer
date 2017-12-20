@@ -55,7 +55,7 @@ void Hailer::Stop()
 //发送数据，即将数据加入消息队列
 void Hailer::Send(const char* buf, int len)
 {
-	Msg msg = make_shared<RealMsg>(buf, len);	
+	Msg msg = make_shared<RealMsg>(buf, len, 0);	
 	m_sendList.Push_front(msg);	
 }
 

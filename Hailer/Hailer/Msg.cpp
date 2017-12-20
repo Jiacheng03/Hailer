@@ -7,11 +7,11 @@ RealMsg::RealMsg()
 {}
 
 // 根据消息体，构造消息
-RealMsg::RealMsg(const char* data, int len)
+RealMsg::RealMsg(const char* data, int len, unsigned int rto)
 {
 	m_head.seq = 0;
 	m_head.timestamp = (unsigned int)time(NULL);
-	m_head.rto = 2;
+	m_head.rto = rto;
 	m_head.ACK = false;
 	m_head.size = len;
 	m_data = string(data, len);
