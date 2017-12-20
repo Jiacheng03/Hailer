@@ -15,43 +15,40 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Hailer.cpp">
+    <ClCompile Include="..\..\src\Hailer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\..\src\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MsgList.cpp">
+    <ClCompile Include="..\..\src\Msg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Talker.cpp">
+    <ClCompile Include="..\..\src\MsgList.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Thread.cpp">
+    <ClCompile Include="..\..\src\Talker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Msg.cpp">
+    <ClCompile Include="..\..\src\Thread.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Hailer.h">
+    <ClInclude Include="..\..\src\Hailer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MsgList.h">
+    <ClInclude Include="..\..\src\Msg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Talker.h">
+    <ClInclude Include="..\..\src\MsgList.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Thread.h">
+    <ClInclude Include="..\..\src\Talker.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Msg.h">
+    <ClInclude Include="..\..\src\Thread.h">
       <Filter>头文件</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="记录.txt" />
   </ItemGroup>
 </Project>
