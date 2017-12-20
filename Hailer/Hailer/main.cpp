@@ -7,8 +7,8 @@ int main(int argc, char** argv)
 {
 	if (argc < 4)
 	{
-		cout << "<usage>: Hailer.exe myPort peerIp peerPort" << endl;
-		cout << "<usage>: 也可以直接使用Debug或Release目录下的start.bat，启动程序." << endl;
+		cerr << "<usage>: Hailer.exe myPort peerIp peerPort\n";
+		cerr << "<usage>: 也可以直接使用Debug或Release目录下的start.bat，启动程序.\n";
 		system("pause");
 	}
 	else

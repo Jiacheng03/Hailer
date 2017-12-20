@@ -45,7 +45,7 @@ void Talker::OpenPort(unsigned short port)
 	
 	if ((m_sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
 	{
-		cerr << "socket fail" << endl;
+		cerr << "socket fail\n";
 		exit(GetErrno());
 	}
 
