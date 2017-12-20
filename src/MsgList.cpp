@@ -1,12 +1,13 @@
 #include "MsgList.h"
 #include <time.h>
 
+// 初始化最大序列号
 MsgList::MsgList()
 {
 	m_maxSeq = 0;
 }
 
-// 当程序终止时，打扫战场
+// 停止使用
 void MsgList::Stop()
 {
 	Msg msg = make_shared<RealMsg>();

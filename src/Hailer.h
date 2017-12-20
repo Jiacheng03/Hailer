@@ -2,7 +2,6 @@
 
 #include "Talker.h"
 #include "MsgList.h"
-//#include "Console.h"
 #include "Thread.h"
 
 #include <thread>
@@ -13,6 +12,7 @@
 class Hailer
 {
 public:
+	// 初始化数据发送模块
 	Hailer(unsigned short myport, const char* peerip, unsigned short peerPort);
 
 	// 开始服务
@@ -29,13 +29,13 @@ public:
 
 private:
 
-	Talker m_talker;
+	Talker m_talker;	// 负责发送数据
 
-	Thread t_bkRecv, t_bkSend;
-	Thread t_recv, t_send;	
+	Thread t_bkRecv, t_bkSend;		// 线程管理：持续调用m_talker的收发接口
+	Thread t_recv, t_send;			// 线程管理：负责标准输入输出和消息队列的处理
 
-	MsgList m_sendList;	
-	MsgList m_recvList;
+	MsgList m_sendList;		// 超时重传队列
+	MsgList m_recvList;		// 接收消息的队列
 	
 	// 负责从端口发送数据
 	void thread_resend();

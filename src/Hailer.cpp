@@ -2,6 +2,7 @@
 #include <thread>
 #include <iostream>
 
+// 初始化数据发送模块
 Hailer::Hailer(unsigned short myport, const char* peerip, unsigned short peerPort)
 :m_talker(myport, peerip, peerPort)
 {

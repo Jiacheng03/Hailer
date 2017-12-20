@@ -15,6 +15,7 @@ using namespace std;
 class MsgList
 {
 public:
+	// 初始化最大序列号
 	MsgList();
 
 	// 将新消息添加到队列头部，并赋予序列号
@@ -38,7 +39,7 @@ public:
 	// 根据序列号，移除一个消息
 	void Erase(int seq);	
 
-	// 当程序终止时，打扫战场
+	// 停止使用
 	void Stop();
 
 private:
