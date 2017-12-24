@@ -37,7 +37,7 @@ public:
 	void InsertByOrder(Msg msg);
 
 	// 根据序列号，移除一个消息
-	void Erase(int seq);	
+	void Erase(unsigned int seq);	
 
 	// 停止使用
 	void Stop();

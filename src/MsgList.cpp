@@ -82,7 +82,7 @@ void MsgList::InsertByOrder(Msg msg)
 }
 
 // 根据序列号，移除一个消息
-void MsgList::Erase(int seq)
+void MsgList::Erase(unsigned int seq)
 {
 	unique_lock<mutex> lck(m_mutex);
 	for (list<Msg>::iterator it = m_list.begin(); it != m_list.end(); it++)

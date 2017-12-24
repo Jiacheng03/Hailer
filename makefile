@@ -10,7 +10,7 @@ SRCS := $(wildcard $(SRC_PATH)/*.cpp)
 OBJS := $(patsubst $(SRC_PATH)/%.cpp, ./%.o, $(SRCS))
 
 LIBS := -lpthread
-CFLAGS := -std=c++14
+CFLAGS := -std=c++14 -Wall
 
 all: clean build
 
